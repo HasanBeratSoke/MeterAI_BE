@@ -6,11 +6,12 @@ from flask import Flask, request, jsonify, render_template, send_from_directory
 import base64
 from ultralytics import YOLO
 from PIL import Image
+import cv2 as cv
 
 app = Flask(__name__)
   
 global model
-
+model = YOLO("detectModel.pt")
 
 
 @app.route('/')
@@ -20,7 +21,7 @@ def index():
 
 @app.route('/base', methods=['POST'])
 def base():
-    model = YOLO("detectModel.pt")
+    
     data = request.get_json()
     print(data['base64'])
 
@@ -32,11 +33,11 @@ def base():
     b = base64.b64decode(encoded_data+ b'=' * (-len(rawdata) % 4) )
     val = io.BytesIO(b)
     img = pl.open(fp=val, mode='r') 
-    #img.save("test.jpeg") # converted and saved base64 to image
-    #print("Image saved")
+    img.save("test.jpeg") # converted and saved base64 to image
+    print("Image saved")
 
-    #img_path  = "test.jpeg"
-    #img = cv.imread(img_path)
+    img_path  = "test.jpeg"
+    img = cv.imread(img_path)
 
     #yolov8 model
     resultsMeter = model.predict(img)
@@ -85,7 +86,7 @@ def base():
         json_data = json.dumps(raw_data)
 
 
-        response = request.post('http://<sunucu_adresi>/api', json=json_data)
+        response = request.post('http://yildizbilal000-001-site1.ftempurl.com/invoice/add', json=json_data)
 
         
         if response.status_code == 200:
